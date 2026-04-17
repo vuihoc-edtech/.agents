@@ -100,6 +100,11 @@ These are often useful, but should still be added only when the project needs th
 
 Use when the design system or assets rely on SVG icons or illustrations.
 
+This pairs well with an asset strategy that prefers:
+
+- `svg` for vector assets
+- `webp` for raster assets
+
 ### `package_info_plus`
 
 Use when the app needs version/build metadata for settings, logs, support, or diagnostics.
