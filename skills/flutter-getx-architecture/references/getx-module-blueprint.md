@@ -106,6 +106,7 @@ lib/
     services/
       deeplink_service.dart
       auth_service.dart
+      purchase_service.dart
       storage_service.dart
   features/
     login/
@@ -405,6 +406,7 @@ Examples:
 - sync orchestration
 - SDK wrappers
 - deep link intake and routing coordination
+- in-app purchase coordination
 
 Do not assume everything in `app/services/` must be registered the same way.
 
@@ -416,6 +418,10 @@ Use this rule instead:
 Folder placement and DI ownership are related but not identical concerns.
 
 For deep links, prefer one app-level `DeeplinkService` that receives URIs from `app_links`, parses them, and forwards explicit navigation intents into the app.
+
+For purchases, prefer one app-level `PurchaseService` that coordinates store connection, purchase events, entitlement refresh, restore flow, and communication with the rest of the app.
+
+Read [purchase-rules.md](purchase-rules.md) when the project needs in-app purchase architecture or implementation guidance.
 
 ## Environment Rule
 
