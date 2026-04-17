@@ -1,43 +1,43 @@
 # Flutter Skills
 
-Bộ skill này dùng để chuẩn hóa kiến trúc, design system, localization, deeplink, storage, bootstrap, và các convention cho Flutter project.
+This repository contains reusable skills and architecture rules for Flutter projects, including structure, design system, localization, deep linking, storage, bootstrap, and coding conventions.
 
-## Cách dùng với `git submodule`
+## Usage with `git submodule`
 
-Trong Flutter project, thêm repo này dưới thư mục `.agents`:
+Inside your Flutter project, add this repository under `.agents`:
 
 ```bash
 git submodule add git@github.com:hautvfami/.agents.git .agents
 ```
 
-Sau đó khởi tạo và cập nhật submodule:
+Then initialize and update the submodule:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-Nếu clone project mới có submodule sẵn:
+If you clone a project that already includes the submodule:
 
 ```bash
 git clone --recurse-submodules <your-flutter-project-git>
 ```
 
-Hoặc nếu đã clone rồi:
+Or, if you already cloned the project:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-## Cập nhật bộ skill
+## Updating the Skills
 
-Vào thư mục submodule rồi pull:
+Go into the submodule and pull the latest changes:
 
 ```bash
 cd .agents
 git pull origin main
 ```
 
-Quay lại Flutter project và commit phần thay đổi ref của submodule:
+Then return to the Flutter project and commit the updated submodule reference:
 
 ```bash
 cd ..
@@ -45,7 +45,7 @@ git add .agents
 git commit -m "chore: update flutter skills submodule"
 ```
 
-## Cấu trúc khuyến nghị
+## Recommended Structure
 
 ```text
 your_flutter_project/
@@ -54,8 +54,9 @@ your_flutter_project/
   pubspec.yaml
 ```
 
-## Gợi ý sử dụng
+## Notes
 
-- dùng repo này như nguồn rule và skill dùng chung cho nhiều Flutter project
-- giữ `.agents` ở root project để dễ quản lý
-- khi cần đồng bộ rule mới, chỉ cần update submodule
+- Use this repository as a shared source of skills and rules across multiple Flutter projects.
+- Keep `.agents` at the project root for easier management.
+- When new rules or skills are added, update the submodule to sync them into the project.
+- One major advantage of using `git submodule` is that you can improve the skills while working inside a real project, push those changes back to the shared repository, and then sync the same improvements across other projects.
