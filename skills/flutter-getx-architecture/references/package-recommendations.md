@@ -29,6 +29,7 @@ Why:
 - works well with app-level theme setup
 
 Use it through the design system and app theme, not ad-hoc in random widgets.
+### `cached_network_image`
 
 ### `animate_do`
 
