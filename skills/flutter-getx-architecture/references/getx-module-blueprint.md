@@ -350,6 +350,8 @@ Do not place raw API calls in controllers.
 
 Keep repository placement consistent across the app: repositories live under `app/data/repositories/`, not inside feature folders.
 
+Read [package-recommendations.md](package-recommendations.md) when deciding which third-party packages should be part of the project baseline.
+
 ## Helpers Rule
 
 Keep helpers small, pure, and explicit.
