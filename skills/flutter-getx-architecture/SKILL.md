@@ -128,6 +128,15 @@ Controllers should usually not:
 - parse JSON directly unless the app is very small
 - become god objects that manage multiple unrelated screens
 
+Async lifecycle hygiene:
+
+- Do not use `unawaited` just to silence an intentionally fire-and-forget call
+  from `onInit`, `onReady`, or similar lifecycle hooks. Call the method directly
+  when the app intentionally does not await it.
+- Do not extract a wrapper method whose only job is to call one other method.
+  Keep the direct call at the lifecycle site unless the wrapper adds real
+  branching, error mapping, cleanup, or reuse.
+
 Read [references/getx-controller-rules.md](references/getx-controller-rules.md) for controller boundaries.
 
 ### 6. Enforce the API stack: `retrofit` + `json_serializable` + `result_dart`
