@@ -7,7 +7,7 @@ This repository contains reusable skills and architecture rules for Flutter proj
 Inside your Flutter project, add this repository under `.agents`:
 
 ```bash
-git submodule add git@github.com:hautvfami/.agents.git .agents
+git submodule add git@github.com:vuihoc-edtech/.agents.git .agents
 ```
 
 Then initialize and update the submodule:
