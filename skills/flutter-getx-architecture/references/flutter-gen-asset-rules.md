@@ -56,10 +56,10 @@ Use judgment:
 When a project needs batch conversion from PNG to WebP, use the bundled script:
 
 ```bash
-scripts/png_to_webp.sh <file-or-directory> [quality]
+scripts/png_to_webp.sh <file-or-directory> [quality] [--force]
 ```
 
-This script keeps the original PNG files and writes sibling `.webp` files. It prefers `cwebp` and falls back to ImageMagick `magick`.
+This script keeps the original PNG files and writes sibling `.webp` files. It skips existing `.webp` files unless `--force` is passed. It prefers `cwebp` and falls back to ImageMagick `magick`.
 
 ## Preferred Usage
 

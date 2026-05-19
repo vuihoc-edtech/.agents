@@ -13,6 +13,10 @@ This skill favors a token-first design system over one-off styling. It is intend
 
 It should also avoid the visual patterns that make Flutter UI look obviously AI-generated: too many decorative containers, inconsistent spacing, arbitrary radii, noisy shadows, and fake complexity with little information value.
 
+Use this skill for visual system decisions. Use `flutter-component-architecture` for splitting large widgets, defining feature component APIs, and deciding state ownership.
+
+Before making design-system decisions, read project-root `.agents.env` once if it exists. Use `FLUTTER_DESIGN_SYSTEM=existing` to extend current conventions, and `FLUTTER_DESIGN_SYSTEM=create` to create an app-level design system when missing.
+
 ## Workflow
 
 ### 1. Inspect the current UI architecture first
@@ -35,7 +39,8 @@ Decide which case applies:
 
 - If the app already has tokens, extend them instead of creating a second system.
 - If the app has scattered hardcoded values, normalize only the area needed for the task unless the user asks for a broader refactor.
-- If the app has no design foundation, create a minimal one that can grow.
+- If the app has no design foundation and `FLUTTER_DESIGN_SYSTEM=create` or the user asks for one, create a minimal one that can grow.
+- If the app has no design foundation but `FLUTTER_DESIGN_SYSTEM=existing`, keep the change local and report the missing foundation as follow-up unless the task requires it.
 
 ### 2. Define or normalize the design tokens before editing screens
 
@@ -50,9 +55,11 @@ Start with these foundations:
 
 Keep raw numbers out of feature widgets as much as possible.
 
+Public design-system tokens must be self-documenting. If a token is public, add a `///` doc comment that states the concrete value and intended use, for example `/// 4dp. Tiny internal gap.` for `spacing.xs`.
+
 Prefer:
 
-- `AppSpacing.md`
+- `spacing.md`
 - `AppRadius.lg`
 - `theme.colorScheme.primary`
 - `theme.textTheme.titleMedium`
@@ -69,6 +76,14 @@ Read [references/design-system-rules.md](references/design-system-rules.md) for 
 Keep the design system at app level, typically under `app/design_system/`, so foundations and base components live outside feature folders.
 
 If a component is clearly part of the app's base UI language, create it in the design system first and then consume it from features. Do not duplicate the same base pattern in feature code and promote it later as an afterthought.
+
+This skill owns base components such as app buttons, text fields, dialogs, snackbars, bottom sheets, skeletons, avatars, cards, and theme-backed surface primitives.
+
+It does not own feature-specific components such as profile headers, lesson rows, checkout summaries, filter panels, or domain-specific cards unless they have become stable app-wide primitives. For those, use `flutter-component-architecture`.
+
+Respect Flutter and Material defaults before introducing custom dimensions. Do not override defaults such as `AppBar.toolbarHeight`/`kToolbarHeight`, standard tap targets, or built-in component density unless the product design needs it and the reason is documented in the component/theme.
+
+When adding or changing stable design-system base components, add or update golden tests so the visual contract can be reviewed. Do not require golden tests for every feature-only widget; use them where visual regression risk is real.
 
 ### 3. Apply a practical spacing and radius system
 
@@ -134,6 +149,12 @@ Keep feature widgets thin. If multiple screens repeat the same card, input, pill
 
 If that repeated pattern is part of the app's design language, move it into `app/design_system/components/` before spreading it further across features.
 
+When this skill and `flutter-component-architecture` both seem relevant:
+
+- start here if the main problem is inconsistent color, spacing, radius, typography, theme usage, or base component styling
+- start with `flutter-component-architecture` if the main problem is a large widget tree, unclear component API, prop drilling, or state ownership
+- use both only when the work genuinely changes both the visual system and component boundaries
+
 Read [references/flutter-theme-blueprint.md](references/flutter-theme-blueprint.md) when the app needs a clean token structure.
 
 ### 7. Design for real usage, not isolated screens
@@ -159,6 +180,9 @@ Before wrapping up:
 - confirm radius uses the approved scale
 - confirm colors come from roles, not ad-hoc values
 - confirm typography hierarchy is consistent
+- confirm public design-system tokens have `///` comments with concrete values and intended use
+- confirm Flutter defaults were preserved unless a documented product reason required an override
+- confirm stable base components have golden coverage or explain why a golden is not useful for this change
 - confirm the screen does not rely on container stacking for visual structure
 - confirm semantic Flutter widgets or design-system base components are used where appropriate
 - confirm feature-specific widgets were not promoted into the design system prematurely
@@ -172,9 +196,10 @@ Typical commands:
 dart format <changed-files>
 dart analyze
 flutter test
+flutter test --update-goldens
 ```
 
-If all checks cannot run, report exactly what was and was not validated.
+Only run `flutter test --update-goldens` when intentionally refreshing approved baseline images. If all checks cannot run, report exactly what was and was not validated.
 
 ## Output Expectations
 

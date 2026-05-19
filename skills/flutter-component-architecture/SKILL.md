@@ -11,6 +11,10 @@ Build Flutter UI from components that are easy to read, reuse, test, and evolve.
 
 This skill favors practical boundaries over rigid patterns. It should reduce duplication and complexity without turning the codebase into a forest of tiny meaningless widgets.
 
+Use this skill for structure, component APIs, file placement, and state ownership. Use `flutter-design-practical` for design tokens, theme primitives, visual consistency, and base design-system styling.
+
+Before promoting components across layers, read project-root `.agents.env` once if it exists. Use `FLUTTER_COMPONENT_PROMOTION=conservative` to keep feature widgets local until reuse is proven, and `FLUTTER_COMPONENT_PROMOTION=promote_base_primitives` when the project wants stable app-wide primitives promoted earlier.
+
 ## Workflow
 
 ### 1. Inspect the current feature and widget structure first
@@ -33,6 +37,29 @@ Decide which case applies:
 - If the screen is large but mostly unique, extract structure-first subwidgets without forcing reuse.
 - If the same UI pattern repeats across features, extract a shared component.
 - If state and UI are tangled, separate state ownership before expanding reuse.
+- If `FLUTTER_COMPONENT_PROMOTION=conservative`, do not move components to shared or design-system layers until reuse and stability are clear.
+- If `FLUTTER_COMPONENT_PROMOTION=promote_base_primitives`, promote only generic base primitives, not feature-specific business components.
+
+### Skill boundary with design work
+
+This skill owns:
+
+- splitting large screen trees into readable feature widgets
+- deciding whether a widget is feature-local, shared product UI, or a design-system primitive
+- designing semantic component APIs and variants
+- deciding local versus lifted state ownership
+
+`flutter-design-practical` owns:
+
+- spacing, radius, color, typography, and elevation tokens
+- `ThemeData`, `ColorScheme`, `TextTheme`, and `ThemeExtension`
+- base visual primitives such as app buttons, text fields, dialogs, snackbars, bottom sheets, skeletons, avatars, and cards
+
+When both seem relevant:
+
+- start here if the main problem is structure, widget size, props, duplication, or state
+- start with `flutter-design-practical` if the main problem is visual inconsistency or missing tokens
+- if extracting a repeated feature widget reveals a missing base visual primitive, keep the feature component here and add only the primitive styling in the design system
 
 ### 2. Split widgets by responsibility, not by line count alone
 
@@ -128,6 +155,8 @@ Typical layers:
 Within a feature, extracted UI pieces should usually live under `widgets/`.
 
 Do not move a widget to `shared/` just because two files use it once.
+
+Do not move a feature widget into the design system only because it is reused. A design-system component must be generic, stable, and free of feature wording or business logic.
 
 ### 7. Build screen trees that are easy to scan
 

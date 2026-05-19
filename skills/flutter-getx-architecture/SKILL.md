@@ -11,6 +11,10 @@ Use GetX as a practical app architecture tool, not as an excuse to mix routing, 
 
 This skill favors feature-based structure, route-level dependency injection, thin views, and controllers that coordinate state instead of owning the whole application.
 
+Shared defaults target new apps and strict architecture. For existing apps, use project-root `.agents.env` to set incremental mode and `existing` policies before applying this skill.
+
+Before choosing architecture mode, read project-root `.agents.env` once if it exists. Treat `.agents/.agents.env.example` as the schema/default reference only.
+
 ## Workflow
 
 ### 1. Inspect the current GetX setup first
@@ -35,6 +39,41 @@ Decide which case applies:
 - If the app already has a clean feature structure, extend it instead of inventing a new layout.
 - If `Get.put` and `Get.find` are scattered through views, move dependencies toward bindings and constructors where possible.
 - If controllers own networking, persistence, mapping, and UI state together, split responsibilities before adding more features.
+
+### Architecture mode
+
+Choose the mode before changing structure:
+
+- **Strict mode** is the shared default for new apps. Use it when `FLUTTER_ARCHITECTURE_MODE=strict`, when no project config overrides the shared default, or when the user says they are building a new app, adopting the full architecture, enabling strict architecture mode, or explicitly wants this skill's architecture as the project baseline.
+- **Incremental mode** is for existing apps that set `FLUTTER_ARCHITECTURE_MODE=incremental`. Preserve the current stack and folder conventions unless the requested change directly benefits from a rule in this skill.
+
+Configuration precedence:
+
+1. direct user request
+2. project-local `AGENTS.md` or `CLAUDE.md`
+3. project-root `.agents.env`
+4. shared skill defaults
+
+In incremental mode:
+
+- avoid adding baseline packages just because this skill recommends them
+- normalize only the touched feature or the smallest useful boundary
+- prefer local consistency with the existing project over forcing the full blueprint
+- report any broader architecture debt as follow-up instead of silently refactoring it
+
+In strict mode:
+
+- use the module blueprint as the target structure
+- use the recommended API, storage, env, asset, deep link, and localization rules unless the user overrides them
+- set up package choices and generation workflows early so new code starts consistent
+
+Relevant `.agents.env` values:
+
+- `FLUTTER_ARCHITECTURE_MODE=incremental|strict`
+- `FLUTTER_API_STACK=existing|retrofit_json_result_dart`
+- `FLUTTER_STORAGE_POLICY=existing|shared_preferences_realm`
+- `FLUTTER_LOCALIZATION_POLICY=existing|app_en_arb_arb_translate`
+- `FLUTTER_ASSET_POLICY=existing|flutter_gen`
 
 ### 2. Keep bootstrap separate from feature and runtime code
 
@@ -139,14 +178,16 @@ Async lifecycle hygiene:
 
 Read [references/getx-controller-rules.md](references/getx-controller-rules.md) for controller boundaries.
 
-### 6. Enforce the API stack: `retrofit` + `json_serializable` + `result_dart`
+### 6. Use the API stack deliberately: `retrofit` + `json_serializable` + `result_dart`
 
-For networked features, API access must use:
+For new apps, strict architecture mode, or `FLUTTER_API_STACK=retrofit_json_result_dart`, API access should use:
 
 - `retrofit` for REST client declarations
 - `json_serializable` for request and response model mapping
 - `result_dart` for repository and app-facing success or failure flows
 - generated `*.g.dart` and Retrofit client files via `build_runner`
+
+For existing apps in incremental mode or `FLUTTER_API_STACK=existing`, first inspect the current API stack. Do not replace a working project-wide API convention unless the user asks for that migration or the touched feature is already moving into this architecture.
 
 Prefer this flow:
 
@@ -169,7 +210,7 @@ Read [references/retrofit-json-serialization-rules.md](references/retrofit-json-
 
 ### 7. Choose local persistence deliberately: `shared_preferences` or `realm`
 
-For local persistence, prefer only these two storage directions unless the user explicitly asks otherwise:
+For strict architecture mode or `FLUTTER_STORAGE_POLICY=shared_preferences_realm`, prefer only these two storage directions unless the user explicitly asks otherwise:
 
 - `shared_preferences` for small, simple, stable key-value settings that need quick access
 - `realm` for dynamic user data, larger local datasets, or data shapes that will likely grow over time
@@ -202,7 +243,7 @@ Read [references/local-storage-rules.md](references/local-storage-rules.md) for 
 
 ### 8. Generate asset access with `flutter_gen`
 
-Do not hardcode asset paths in widgets, themes, or services.
+Do not hardcode asset paths in widgets, themes, or services when the project uses `FLUTTER_ASSET_POLICY=flutter_gen`, strict architecture mode, or an existing generated asset system.
 
 Use:
 
@@ -290,7 +331,7 @@ Read [references/deeplink-rules.md](references/deeplink-rules.md) for the servic
 
 ### 12. Keep localization app-level with `app_en.arb` + `arb_translate`
 
-Treat localization as an app-level concern.
+Treat localization as an app-level concern. In strict architecture mode or `FLUTTER_LOCALIZATION_POLICY=app_en_arb_arb_translate`, use the source-driven ARB workflow below.
 
 Prefer:
 
@@ -361,6 +402,7 @@ Before wrapping up:
 - confirm dependencies are registered in predictable places
 - confirm `main.dart` stays thin and bootstrap logic lives under `app/bootstrap/`
 - confirm bootstrap does not use unnecessary sequential `await` chains
+- confirm whether the work used incremental mode or strict/new-app mode
 - confirm GetX bindings only register GetX-facing objects
 - confirm non-GetX infrastructure is resolved from `get_it` or the project's app-level DI container
 - confirm controllers do not own too many responsibilities
@@ -398,6 +440,7 @@ When using this skill, finish with a short summary that includes:
 - which feature or route boundaries changed
 - whether bindings and dependency injection were standardized
 - whether controller responsibilities became clearer
+- whether the work used incremental mode or strict/new-app mode
 - whether the API layer was normalized to `retrofit`, `json_serializable`, and `result_dart`
 - whether local persistence was placed in `shared_preferences` or `realm` for the right reasons
 - whether asset access was normalized to `flutter_gen`
@@ -411,6 +454,7 @@ When using this skill, finish with a short summary that includes:
 ## Heuristics
 
 - Feature scope first, global scope second.
+- New apps use strict architecture by default; existing apps should opt into incremental adoption through `.agents.env`.
 - Bindings are the default composition root for GetX features.
 - Controllers orchestrate; services and repositories execute.
 - API contracts use `retrofit`; JSON mapping uses `json_serializable`; repository flows use `result_dart`.

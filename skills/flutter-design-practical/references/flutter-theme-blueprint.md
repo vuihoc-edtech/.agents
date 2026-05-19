@@ -23,6 +23,11 @@ lib/
         inputs/
         feedback/
         surfaces/
+test/
+  design_system/
+    buttons_golden_test.dart
+    inputs_golden_test.dart
+  goldens/
 ```
 
 The exact paths can change to match the repo, but keep the responsibilities separated. The important rule is that the design system lives at app level, not inside a feature.
@@ -41,13 +46,17 @@ Avoid:
 - placing every token into global top-level constants with no theme access path
 - feature modules defining their own competing spacing scales
 - feature folders owning the app's base button, input, dialog, or snackbar components
+- overriding Flutter defaults such as `AppBar.toolbarHeight` just to make every dimension tokenized
+- public token names without `///` comments explaining the concrete value and intended use
 
 ## Example
 
+This example is a minimal implementation shape, not the entire token catalog. Keep `design-system-rules.md` as the source of truth for approved values, and add documented tokens when a project needs values such as `0` or `40`.
+
 ```dart
 @immutable
-class AppSpacing extends ThemeExtension<AppSpacing> {
-  const AppSpacing({
+class Spacing extends ThemeExtension<Spacing> {
+  const Spacing({
     required this.xxs,
     required this.xs,
     required this.sm,
@@ -57,16 +66,29 @@ class AppSpacing extends ThemeExtension<AppSpacing> {
     required this.xxl,
   });
 
+  /// 4dp. Tiny internal adjustment only.
   final double xxs;
+
+  /// 8dp. Default tight gap between related elements.
   final double xs;
+
+  /// 16dp. Default component padding and stack gap.
   final double sm;
+
+  /// 24dp. Section padding or spacious component interior.
   final double md;
+
+  /// 32dp. Page-level separation.
   final double lg;
+
+  /// 48dp. Large page-level separation.
   final double xl;
+
+  /// 64dp. Extra-large page-level separation.
   final double xxl;
 
   @override
-  AppSpacing copyWith({
+  Spacing copyWith({
     double? xxs,
     double? xs,
     double? sm,
@@ -75,7 +97,7 @@ class AppSpacing extends ThemeExtension<AppSpacing> {
     double? xl,
     double? xxl,
   }) {
-    return AppSpacing(
+    return Spacing(
       xxs: xxs ?? this.xxs,
       xs: xs ?? this.xs,
       sm: sm ?? this.sm,
@@ -87,9 +109,9 @@ class AppSpacing extends ThemeExtension<AppSpacing> {
   }
 
   @override
-  AppSpacing lerp(ThemeExtension<AppSpacing>? other, double t) {
-    if (other is! AppSpacing) return this;
-    return AppSpacing(
+  Spacing lerp(ThemeExtension<Spacing>? other, double t) {
+    if (other is! Spacing) return this;
+    return Spacing(
       xxs: lerpDouble(xxs, other.xxs, t)!,
       xs: lerpDouble(xs, other.xs, t)!,
       sm: lerpDouble(sm, other.sm, t)!,
@@ -104,21 +126,21 @@ class AppSpacing extends ThemeExtension<AppSpacing> {
 
 Typical mapping:
 
-- `xxs = 2`
-- `xs = 4`
-- `sm = 8`
-- `md = 12`
-- `lg = 16`
-- `xl = 24`
-- `xxl = 32`
+- `xxs = 4`
+- `xs = 8`
+- `sm = 16`
+- `md = 24`
+- `lg = 32`
+- `xl = 48`
+- `xxl = 64`
 
 Usage:
 
 ```dart
-final spacing = Theme.of(context).extension<AppSpacing>()!;
+final spacing = Theme.of(context).extension<Spacing>()!;
 
 Padding(
-  padding: EdgeInsets.all(spacing.lg),
+  padding: EdgeInsets.all(spacing.md),
   child: SizedBox(height: spacing.sm),
 )
 ```
@@ -126,10 +148,13 @@ Padding(
 ## Practical Conventions
 
 - Use `const` widgets aggressively when possible
-- Prefer `EdgeInsets.symmetric(horizontal: spacing.lg)` over repeating literals
+- Prefer `EdgeInsets.symmetric(horizontal: spacing.sm)` for the common 16dp screen padding, or `spacing.md` for wider 24dp layouts
 - Prefer extracting repeated layout blocks into widgets before they spread to many screens
 - Keep one place where default card radius and content padding are defined
 - Keep base components such as `PrimaryButton`, `SecondaryButton`, `AppTextField`, `SearchBar`, `AppCheckbox`, `AppDialog`, and `Skeleton` under `app/design_system/components/`
+- Keep Flutter's default `AppBar` height unless the product design explicitly needs a custom toolbar height
+- Add `///` comments to every public token, base component, and public design-system enum so generated docs and IDE hover explain intent
+- Add focused golden tests for stable base components and update golden baselines only after visual review
 
 ## Component Promotion Rule
 

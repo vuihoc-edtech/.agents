@@ -6,6 +6,12 @@ Use an 8pt spacing rhythm as the default layout language. Use 4dp only for tight
 
 This keeps the UI calm, professional, and predictable while avoiding the random spacing that often makes AI-generated interfaces look fake.
 
+Prefer Flutter and Material defaults before adding custom dimensions. Override framework defaults only when the product design needs it and the reason is documented.
+
+Public design-system APIs must include `///` doc comments. A developer reading `spacing.xs` or `radius.md` should be able to hover and see the concrete value and intended use.
+
+Stable base components should have golden coverage so visual changes are visible during review. Keep golden tests focused on the design-system surface rather than every feature-only widget.
+
 ## Spacing Scale
 
 Default spacing scale:
@@ -29,10 +35,11 @@ Practical usage:
 
 Rules:
 
-- Never use odd spacing values.
+- Never use odd values for layout spacing tokens.
 - Avoid `6`, `10`, `12`, `14`, `18`, `20`, `22` unless an existing system already depends on them and a migration is out of scope.
 - Prefer `8`, `16`, `24`, `32` as the dominant rhythm of the app.
 - Prefer fewer spacing values used consistently over a mathematically complete scale.
+- If a project intentionally uses intermediate values such as `12`, document them in the token comments and use them consistently instead of mixing ad-hoc literals.
 
 ## Border Radius Scale
 
@@ -93,6 +100,8 @@ Rules:
 
 - Keep touch targets at or above `44`, preferably `48`
 - Avoid visually tiny controls even if the content technically fits
+- Do not redefine Flutter defaults such as `AppBar.toolbarHeight` unless the product design specifically requires a custom height
+- Prefer built-in Material component sizing and density before introducing app-specific height tokens
 
 ## Icon Sizes
 
@@ -162,6 +171,28 @@ Rules:
 - If app-wide visual consistency is required, build base components in the design system and consume those instead of rebuilding styled containers in feature code.
 - Split complex UI sections into `StatelessWidget` components so the screen remains readable and maintainable.
 
+## Golden Test Rules
+
+Use golden tests for:
+
+- design-system buttons, inputs, dialogs, snackbars, bottom sheets, cards, skeletons, and reusable surface primitives
+- theme changes that affect many components
+- component states such as default, disabled, loading, error, selected, focused, and long text when those states are part of the public visual contract
+
+Avoid golden tests for:
+
+- one-off feature widgets whose layout is still changing rapidly
+- screens with volatile network images, clocks, random data, animations, or platform-specific rendering unless they are stabilized in the test
+- behavior that is better covered by widget tests or unit tests
+
+Golden test discipline:
+
+- wrap the component in a stable test app/theme
+- use deterministic fonts, text, sizes, and surface constraints
+- prefer testing base component states together in one compact catalog when it improves review
+- update goldens only when the visual change is intentional and has been reviewed
+- keep golden files near the relevant test folder using a predictable path such as `test/goldens/`
+
 ## Decision Rules
 
 When unsure:
@@ -169,3 +200,6 @@ When unsure:
 1. pick the nearest approved token
 2. prefer consistency over local perfection
 3. add a new token only if the value repeats or carries semantic meaning
+4. preserve Flutter defaults unless there is a product reason to override them
+5. document public token values with `///` comments
+6. add golden coverage for stable base components with public visual contracts
