@@ -12,6 +12,32 @@ Public design-system APIs must include `///` doc comments. A developer reading `
 
 Stable base components should have golden coverage so visual changes are visible during review. Keep golden tests focused on the design-system surface rather than every feature-only widget.
 
+## Project Style Reference: Pidu Learning English
+
+When this skill is used in the `learning_english` app, match the Pidu preview screenshots in `/screenshots` before falling back to generic defaults.
+
+Reference lookup:
+
+- `pidu-ui-kit-cover.png`: overall brand direction, green hero, playful education mood.
+- `style-guide-colors-typography-course-card.png`: color, typography, radius, and course-card base style.
+- `component-card-controls-overview.png`: modal, button, reward, room, progress, and lesson-card components.
+- `mascot-set-overview.png`: rounded mascot/avatar language and soft mint panels.
+- `app-workflow-screens-overview.png`: real screen density, tab treatment, benefit cards, and bottom navigation.
+- `screen-collage-50-plus.png`: broad screen inventory and repeated visual patterns.
+- `hero-learning-english-exercise.png`: app hero, exercise surface, and large green background arcs.
+- `style-guide-feature-highlights.png`: feature stat cards and white rounded surface rhythm.
+
+Extracted Pidu base style:
+
+- Background: very light mint (`#F2FCF8`) rather than pure white.
+- Primary: vivid green (`#1CC874`) with darker green (`#119E5C`) for headers, tabs, and emphasis.
+- Surfaces: white cards over mint background with subtle `#E7EFEA` borders and very soft green shadows.
+- Accent colors: orange (`#FF8A2A`) for progress and secondary CTAs, yellow (`#FDB72C`) for reward/gift states, pink (`#F25B9A`), purple (`#8C70E8`), and blue (`#2F9BEF`) for playful learning categories.
+- Typography: rounded, friendly, heavy headings in a Fredoka-like style; body text stays compact and readable.
+- Radius: soft consumer-app shapes dominate. Use 16dp for normal cards, 24dp for prominent panels, and pill radius for CTAs/chips.
+- Components: primary buttons are green pills; secondary buttons use pale mint; reward/watch CTAs are orange; status chips are compact rounded pills; course and benefit cards are white, spacious, and lightly outlined.
+- Illustration language: simple rounded mascot shapes and learning objects, not abstract gradients or AI-looking decoration.
+
 ## Spacing Scale
 
 Default spacing scale:
