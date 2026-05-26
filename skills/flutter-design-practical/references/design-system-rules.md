@@ -35,7 +35,7 @@ Extracted Pidu base style:
 - Accent colors: orange (`#FF8A2A`) for progress and secondary CTAs, yellow (`#FDB72C`) for reward/gift states, pink (`#F25B9A`), purple (`#8C70E8`), and blue (`#2F9BEF`) for playful learning categories.
 - Typography: rounded, friendly, heavy headings in a Fredoka-like style; body text stays compact and readable.
 - Radius: soft consumer-app shapes dominate. Use 16dp for normal cards, 24dp for prominent panels, and pill radius for CTAs/chips.
-- Components: primary buttons are green pills; secondary buttons use pale mint; reward/watch CTAs are orange; status chips are compact rounded pills; course and benefit cards are white, spacious, and lightly outlined.
+- Components: primary buttons are green pills with soft shadow and small white gloss marks; implement those marks with a static `CustomPainter` in the base button rather than stacking decorative widgets in every caller. Secondary buttons use pale mint; reward/watch CTAs are orange; status chips are compact rounded pills; course and benefit cards are white, spacious, and lightly outlined.
 - Illustration language: simple rounded mascot shapes and learning objects, not abstract gradients or AI-looking decoration.
 
 ## Spacing Scale
